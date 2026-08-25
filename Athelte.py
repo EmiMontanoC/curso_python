@@ -9,7 +9,7 @@ class Athlete:
         return f"Athlete(name={self.name}, age={self.age}, sport={self.sport})"
     
     def __repr__(self):
-        return f"Athlete(name={self.name}, age={self.age}, sport={self.sport})"
+        return f"Athlete(name='{self.name}', age={self.age}, sport='{self.sport}')"
     
     def display(self):
         print(f"|{self.name} | {self.age} | {self.sport} |")
@@ -26,6 +26,10 @@ def main():
     print(repr(b))
     a.display()
     b.display()
+    c = eval(repr(b))
+    print(c)
+    print(f"c is b: {c is b}")
+    print(f"id c:{id(c)}, id b: {id(b)}")
 
 if __name__ == "__main__":
     main()
