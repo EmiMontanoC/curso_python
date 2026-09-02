@@ -1,7 +1,7 @@
 class Sport:
     """ Sport class represents a sport in a thournament"""
     max_score = {
-        "Soccer":20,
+        "Futbol":20,
         "Baseball":50,
         "Football":70,
         "Basketball":150,

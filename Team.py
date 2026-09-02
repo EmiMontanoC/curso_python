@@ -28,6 +28,12 @@ class Team:
     def __str__(self):
         """ String representation of the Team class"""
         return f"{self.name} - {self.sport}: {[x for x in self.athletes]}"
+    def set_athletes(self, athletes):
+        """ Set the list of athletes for the team."""
+        if isinstance(athletes, list) and all(isinstance(x, Athlete) for x in athletes):
+            self.athletes = athletes
+        else:
+            raise ValueError("Only list of Athlete objects")
 
 if __name__ == "__main__":
     a = Athlete("Lionel Messi",38,"Soccer")

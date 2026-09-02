@@ -3,6 +3,7 @@ from Game import Game
 from Athlete import Athlete
 from Team import Team
 from Sport import Sport
+from itertools import combinations
 def load_json(filename):
         """ Load a Tournament object from a JSON file."""
         data = None
@@ -12,13 +13,12 @@ def load_json(filename):
 
 def json_to_team(data):
     teams = []
-    for team_data in data['name']:
+    for team_data in data:
         team_name = team_data['name']
-        for sport_data in team_data['sport']:
-            sport_name = sport_data['name']
-            league = sport_data['league']
-            num_players = sport_data['num_players']
-            sport = Sport(sport_name, league, num_players)
+        sport_name = team_data['sport']['name']
+        league = team_data['sport']['league']
+        num_players = team_data['sport']['num_players']
+        sport = Sport(sport_name, league, num_players)
         athletes = []
         for athlete_data in team_data['athletes']:
             athlete_name = athlete_data['name']
@@ -26,15 +26,20 @@ def json_to_team(data):
             athlete_sport = sport.sport_name
             athlete = Athlete(athlete_name, age, athlete_sport)
             athletes.append(athlete)
-        team = Team(team_name, sport, athletes)
+        team = Team(team_name, sport)
+        team.set_athletes(athletes)
         teams.append(team)
     return teams
 def main():
     
     tournament_data = load_json('tournament.json')
     teams = json_to_team(tournament_data)
-    print("Tournament: ", tournament_data)
-    print("Teams: ", teams)
+    team_combinations=list(combinations(teams, 2))
+    for local,visitor in team_combinations:
+        game = Game(local,visitor)
+        game.play()
+        game.display()
+        print("\n")
 
 if __name__ == "__main__":
     main()
