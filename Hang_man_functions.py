@@ -1,27 +1,65 @@
-class HangMan:
-    def __init__(self, word_list, num_lives=5):
+class Hangman:
+    """Class to represent the Hangman game."""
+    LIVES = 7
+
+    def __init__(self, word_list:list):
         self.board = {}
         self.word_list = word_list
-        self.num_lives = num_lives
+        self.reset_game()
+
+    def reset_game(self):
+        """Reset the game state with a new random word."""
+        self.num_lives = self.LIVES
         self.word = choice(self.word_list)
         self.word_guessed = ['_'] * len(self.word)
         self.num_letters = len(set(self.word))
         self.list_of_guesses = []
- 
+
+    def current_board_index(self):
+        """Return the current board stage based on failed attempts."""
+        return self.LIVES - self.num_lives
+
     def load_board(self):
-        for i in range(0,7):
-            with open(f"board{i}.txt", "r") as f:
+        """Load the the game board."""
+        board_dir = Path(__file__).parent
+        for i in range(0, self.LIVES + 1):
+            file_path = os.path.join(board_dir, f"board_{i}.txt")
+            with open(file_path, "r", encoding="utf-8") as f:
                 self.board[i] = f.read()
- 
+                
     def display_board(self):
-        print(self.board[self.num_lives])
-        print("".join(self.word_guessed))
-        print(f"Lives left: {self.num_lives}")
+        """Display the current state of the game board."""
+        print(self.board[self.current_board_index()])
+        print(" ".join(self.word_guessed))
+        print(f"Lives remaining: {self.num_lives}")
         print(f"Guessed letters: {', '.join(self.list_of_guesses)}")
- 
- 
-if __name__ == "__main__":
-    word_list = ["python","java","javascript","hangman","programing"]
-    hangman_game = HangMan(word_list)
-    hangman_game.load_board()
-    hangman_game.display_board()
+
+    def refresh_view(self, message: str | None = None):
+        """Render the current terminal state of the game."""
+
+
+    def game_won(self):
+        """Return True when the player has guessed the entire word."""
+
+
+    def game_lost(self):
+        """Return True when the player has no lives left."""
+
+
+    def check_guess(self, guess:str):
+        """Check if the guessed letter is in the word."""
+
+
+    def submit_guess(self, guess: str):
+        """Apply a terminal guess and return the resulting message."""
+
+
+    def restart_game(self):
+        """Restart the terminal game."""
+
+
+    def play(self):
+        """Run the hangman game loop in the terminal."""
+        
+        
+        
