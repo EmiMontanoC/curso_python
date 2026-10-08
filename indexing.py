@@ -49,10 +49,14 @@ def main(args):
     print("TF-IDF Dictionary:", tfidf_dict.keys())
     word_to_check = args.word
     print(f"TF-IDF for '{word_to_check}':")
+    unsorted_results = {}
     for book_name, tfidf in tfidf_dict.items():
         if word_to_check in tfidf:
-            print(f"Book: {book_name}, TF-IDF for '{word_to_check}': {tfidf[word_to_check]:.6f}")
-
+            #print(f"Book: {book_name}, TF-IDF for '{word_to_check}': {tfidf[word_to_check]:.6f}")
+            unsorted_results[book_name] = tfidf[word_to_check]
+    sorted_results = sorted(unsorted_results.items(), key=lambda x: x[1], reverse=True)
+    for book_name, tfidf_value in sorted_results:
+        print(f"Book: {book_name}, TF-IDF for '{word_to_check}': {tfidf_value:.6f}")
 def compute_idf(documents):
     '''
         Compute inverse document frequency
