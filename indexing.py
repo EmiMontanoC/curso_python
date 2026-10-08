@@ -4,7 +4,7 @@ import os
 import math
 import itertools
 
-from auxiliary_functions import list_directory_files, load_book, clean_list_of_words, reduce_list_of_words, count_words   
+from auxilary_functions import list_directory_files, load_book, clean_list_of_words, reduce_list_of_words, count_words   
 
 def compute_tf(word_count, total_words):
     """ Compute the term frequency (TF) for a word in a document. """
@@ -32,7 +32,7 @@ def main(args):
                 book_dictionary[file] = load_book(os.path.join(book_path, file))
     else:
         print(f"Error: The path '{book_path}' is neither a file nor a directory.")
-    print(book_dictionary.keys())
+    """print(book_dictionary.keys())
     for book_name, words in book_dictionary.items():
         cleaned_words = clean_list_of_words(words)
         word_count = count_words(cleaned_words)
@@ -44,7 +44,14 @@ def main(args):
         print(f"Term Frequencies:")
         for word, tf in tf_dict.items():
             if tf >=0.0001:  # Only print words with a non-zero frequency
-                print(f"  {word}: {tf:.4f}")
+                print(f"  {word}: {tf:.4f}")"""
+    tfidf_dict = book_indexing(book_dictionary)
+    print("TF-IDF Dictionary:", tfidf_dict.keys())
+    word_to_check = args.word
+    print(f"TF-IDF for '{word_to_check}':")
+    for book_name, tfidf in tfidf_dict.items():
+        if word_to_check in tfidf:
+            print(f"Book: {book_name}, TF-IDF for '{word_to_check}': {tfidf[word_to_check]:.6f}")
 
 def compute_idf(documents):
     '''
@@ -71,10 +78,42 @@ def compute_idf(documents):
         idf_dictionary[word] = math.log(N/float(valor))
     return idf_dictionary
 
+def compute_tf_idf(tf:dict, idfs:dict) -> dict:
+    '''
+        Computes Term-Frequency-Inverse Document Frequency (TF-IDF) for all documents.
+        usage: tfidf_book = compute_tf_idf(book_tf, idfs)
+        Returns a dictionary with the TF-IDF of the book.
+        Computes Term-Frequency-Inverse Document Frequency
+        for all documents
+        usage: tfidf_book = compute_tf_idf(book_tf, idfs)
+        Returns a dictionary with the TF-IDF of the book.
+    '''
+    tfidf = dict()
+    for word, value in tf.items():
+        tfidf[word] = value * idfs[word]
+    return tfidf
+
+def book_indexing(dictionary_of_books:dict) -> dict:
+    """ Indexes the books and computes TF, IDF, and TF-IDF. """
+    tf_dict = {}
+    for book_name, words in dictionary_of_books.items():
+        cleaned_words = clean_list_of_words(words)
+        word_count = count_words(cleaned_words)
+        total_words = len(cleaned_words)
+        tf_dict[book_name] = compute_tf(word_count, total_words)
+
+    idf_dict = compute_idf(list(tf_dict.values()))
+
+    tfidf_dict = {}
+    for book_name, tf in tf_dict.items():
+        tfidf_dict[book_name] = compute_tf_idf(tf, idf_dict)
+
+    return tfidf_dict
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Index books.")
     parser.add_argument("book_path", type=str, help="Path to the books text files.")
+    parser.add_argument("--word","-w", type=str, default="blood", help="Word to check TF-IDF for." )
     args = parser.parse_args()
     main(args)
