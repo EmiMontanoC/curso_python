@@ -1,6 +1,6 @@
 import os
 import csv
- 
+
 def load_csv_data(file_path):
     data = {}
     with open(file_path, mode = 'r', encoding = 'utf-8') as csvfile:
