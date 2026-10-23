@@ -6,6 +6,18 @@ import requests
 import argparse
 from bs4 import BeautifulSoup
 
+def read_file(file_path:str) -> str:
+    """Read the content of a file and return it as a string"""
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return f.read()
+
+def write_file(file_path:str, content:str):
+    """Write the given content to a file"""
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+        print(f"Content successfully written to {file_path}")
 def scrap_web_page(url:str) -> str:
     """Scrapes the web page and returns the content as a string."""
     response = requests.get(url)
@@ -16,35 +28,45 @@ def scrap_web_page(url:str) -> str:
     
     
 def get_dollar_exchange_rate(content: str) -> list:
-    """Extracts the dollar exchange rate from the web page content."""
-    soup = BeautifulSoup(content, 'html.parser')
-    main_table = soup.find('table', id='dllsTable')
+    """Extract the dollar exchange rate from the web page content."""
+    soup = BeautifulSoup(content, "html.parser")
+    main_table = soup.find("table", id="dllsTable")
     price_list = []
+
     if main_table:
-        rows = main_table.find_all('tr')
+        rows = main_table.find_all("tr")
         for row in rows:
-            cols = row.find_all('td')
+            cols = row.find_all("td")
             if len(cols) == 4:
                 sell_price = cols[3].text.strip()
-                buy_price = cols[2].text.strip()
-                bank_name = cols[1].text.strip()
-                print(bank_name)
-            if len(cols) == 5:
-                sell_price = cols[3].text.strip()
-                buy_price = cols[4].text.strip()
-                bank_name = cols[2].text.strip()
-                print(bank_name)
+                buy_price = cols[3].text.strip()
+                bank_name = cols[0].text.strip()
+            elif len(cols) == 5:
+                sell_price = cols[4].text.strip()
+                buy_price = cols[3].text.strip()
+                bank_name = cols[0].text.strip()
+            else:
+                continue
+
             price_list.append((bank_name, sell_price, buy_price))
     else:
         print("Error: Could not find the main table with id 'dllsTable'.")
     return price_list
 
+
 def main(args):
-    """Main function to scrape the web page and save the content to a file."""
-    url = args.url
-    output_file = args.output_file
     try:
-        content = scrap_web_page(url)
+        """Main function to scrape the web page and save the content to a file."""
+        if args.input.startswith("http://") or args.input.startswith("https://"):
+            url = args.input
+        else:
+            url = "file://" + os.path.abspath(args.input)
+        output_file = args.output_file
+        if url.startswith("file://"):
+            file_path = url[7:]  # Remove 'file://' prefix
+            content = read_file(file_path)
+        else:
+            content = scrap_web_page(url)
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(content)
         print(f"Content successfully saved to {output_file}")
@@ -57,7 +79,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Scrape a web page and save its content to a file.")
-    parser.add_argument("url", type=str, help="URL of the web page to scrape.")
+    parser.add_argument("input", type=str, help="URL of the web page to scrape.")
     parser.add_argument("output_file", type=str, help="Path to the output file where the content will be saved.")
     args = parser.parse_args()
     main(args)
