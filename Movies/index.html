@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+    <title> My Movie Database</title>
+</head>
+<body>
+    <h1>
+        Welcome to My Movie Database
+    </h1>
+        <ul>
+            {% for movie in movies %}
+                <li>
+                    {{movie.movie_title}} - {{movie.release_date}}
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</head>
+</html>
