@@ -64,7 +64,8 @@ def retrieve_data_with_query(conn, query: str) -> list:
     """ Retrieve data from the database using a custom SQL query """
     cur = conn.cursor()
     cur.execute(query)
-    rows = cur.fetchall()
+    fields = [description[0] for description in cur.description]
+    rows = [dicts(zip(fields, row)) for row in cur.fetchall()]
     return rows
 
 def show_rows(rows: list):
