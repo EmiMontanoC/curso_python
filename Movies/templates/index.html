@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movies</title>
+    <title>My Movie Database</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie_styles.css') }}">
 </head>
 <body>
     <h1>My Movie Database</h1>
+    <div><a href="{{ url_for('movies') }}">View movies</a></div>
     <ul>
-        {% for movie in movies %}
-            <li>{{ movie.title }} ({{ movie.year }})</li>
-        {% endfor %}
+        {% for movie in rows %}
+            <a href="{{ url_for('movie_details', movie_id=movie.id) }}">
+                {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.movie_title }} poster" width="100">
+                {% endif %}
+                <li>{{ movie.movie_title }} ({{ movie.release_date }})</li>
+            </a>
+        {% endfor %}    
     </ul>
 </body>
 </html>

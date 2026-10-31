@@ -65,7 +65,7 @@ def retrieve_data_with_query(conn, query: str) -> list:
     cur = conn.cursor()
     cur.execute(query)
     fields = [description[0] for description in cur.description]
-    rows = [dicts(zip(fields, row)) for row in cur.fetchall()]
+    rows = [dict(zip(fields, row)) for row in cur.fetchall()]
     return rows
 
 def show_rows(rows: list):
